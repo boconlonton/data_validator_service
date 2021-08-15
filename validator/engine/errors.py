@@ -12,3 +12,7 @@ class ObjectKeyError(Exception):
 
 class MissingHeadersError(Exception):
     pass
+
+
+class MissingDataSheet(Exception):
+    pass

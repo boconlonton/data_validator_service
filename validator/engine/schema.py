@@ -10,7 +10,7 @@ _HEADERS = {
     'first_name',
     'middle_name',
     'last_name',
-    'code',
+    'staff_id',
     'date_of_birth',
     'work_email',
     'phone_number',

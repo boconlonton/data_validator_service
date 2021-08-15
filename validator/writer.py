@@ -1,4 +1,3 @@
-import boto3
 import os
 
 from typing import List
@@ -33,12 +32,11 @@ class ExcelWriter:
         self.wb = Workbook()
         self.ws = self.wb.active
         self.ws.title = 'Data'
-        self.ws.appends([
+        self.ws.append([
             " ".join(field.split('_')).capitalize()
             for field in self.headers
         ])
         self.write_sheet(stream)
-        self.client = boto3.client('s3')
 
     @property
     def duplicated_file(self):
@@ -73,7 +71,7 @@ class ExcelWriter:
                      row=row_idx,
                      value=data.get('error_msg'))
 
-    def upload_to_s3(self):
+    def upload_to_s3(self, *, client, bucket_name):
         if self.duplicated_file:
             post_fix = 'duplicates'
         else:
@@ -83,9 +81,9 @@ class ExcelWriter:
         with NamedTemporaryFile() as tmp:
             self.wb.save(tmp.name)
             tmp.seek(0)
-            self.client.upload_fileobj(tmp,
-                                       os.environ.get('S3_BUCKET'),
-                                       obj_key)
+            client.upload_fileobj(tmp,
+                                  bucket_name,
+                                  obj_key)
 
 
 class DBWriter:

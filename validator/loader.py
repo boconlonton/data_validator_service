@@ -59,10 +59,11 @@ def get_info_from_key(*, key: str) -> Any:
 
     """
     temp = key.split('/')
+    file_name_obj = extract_file_name(file_name=temp[-1])
+    temp[-1] = file_name_obj
     file_obj = file_nt(*temp)
     if not file_obj.task_id:
         raise TaskError('MISSING_TASK_ID')
     if not file_obj.task_id.isnumeric():
         raise TaskError('INVALID_TASK_ID')
-    file_obj.file = extract_file_name(file_name=file_obj.file)
     return file_obj

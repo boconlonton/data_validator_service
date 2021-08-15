@@ -71,6 +71,7 @@ class Validator:
         self.teaching_title_id = instance.teaching_title
         self.academic_title_id = instance.academic_title
         self.degree_id = instance.degree
+        self._instance = instance
         self.validate()
 
     @property
@@ -246,7 +247,7 @@ class Validator:
                 for k, v in e.messages.items()
             )
             self.bad_stream.append({
-                'data': self,
+                'data': self._instance,
                 'errors': e.messages,
                 'error_msg': "".join(msg)
             })
@@ -254,10 +255,11 @@ class Validator:
         else:
             self.valid_stream.append(obj)
 
-    def check_duplicate(self):
+    @classmethod
+    def check_duplicate(cls):
         return filter(
-            lambda record: record.get('work_email') in self._EMAILS,
-            self.valid_stream
+            lambda record: record.get('work_email') in cls._EMAILS,
+            cls.valid_stream
         )
 
     @staticmethod
