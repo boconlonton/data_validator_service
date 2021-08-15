@@ -66,6 +66,3 @@ def get_info_from_key(*, key: str) -> Any:
         raise TaskError('INVALID_TASK_ID')
     file_obj.file = extract_file_name(file_name=file_obj.file)
     return file_obj
-
-
-

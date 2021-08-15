@@ -74,8 +74,12 @@ class ExcelWriter:
                      value=data.get('error_msg'))
 
     def upload_to_s3(self):
+        if self.duplicated_file:
+            post_fix = 'duplicates'
+        else:
+            post_fix = 'errors'
         obj_key = (f'output/{self.obj_key.task_id}'
-                   f'/{self.obj_key.file.name}_errors.xlsx')
+                   f'/{self.obj_key.file.name}_{post_fix}.xlsx')
         with NamedTemporaryFile() as tmp:
             self.wb.save(tmp.name)
             tmp.seek(0)
