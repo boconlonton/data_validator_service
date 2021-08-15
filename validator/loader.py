@@ -4,8 +4,11 @@ from collections import namedtuple
 
 from typing import Any
 
-from src.validator.errors import ObjectKeyError
-from src.validator.errors import TaskError
+from validator.engine.errors import ObjectKeyError
+from validator.engine.errors import TaskError
+
+file_nt = namedtuple('DataFile', 'parent task_id file', defaults=None)
+file_name_nt = namedtuple('FileName', 'name extension')
 
 
 def get_key_from_event(*, event: dict) -> str:
@@ -36,7 +39,6 @@ def extract_file_name(*, file_name: Any) -> Any:
     Raises:
         ExtensionError: file extension is not supported
     """
-    file_name_nt = namedtuple('FileName', 'name extension')
     temp = file_name.split('.')
     file_name_obj = file_name_nt(*temp)
     return file_name_obj
@@ -56,7 +58,6 @@ def get_info_from_key(*, key: str) -> Any:
                 extension (str): File extension
 
     """
-    file_nt = namedtuple('DataFile', 'parent task_id file', defaults=None)
     temp = key.split('/')
     file_obj = file_nt(*temp)
     if not file_obj.task_id:

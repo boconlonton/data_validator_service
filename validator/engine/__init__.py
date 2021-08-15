@@ -2,10 +2,10 @@ from collections import Counter
 
 from marshmallow import ValidationError
 
-from src.validator.schema import UserSchema
-from src.validator.schema import _HEADERS
+from validator.engine.schema import UserSchema
+from validator.engine.schema import _HEADERS
 
-from src.validator.errors import MissingHeadersError
+from validator.engine.errors import MissingHeadersError
 
 
 class Validator:
@@ -241,9 +241,14 @@ class Validator:
             self.stats['total'] += 1
             obj = validator.load(temp)
         except ValidationError as e:
+            msg = (
+                f'{k}: {",".join(v)}\n'
+                for k, v in e.messages.items()
+            )
             self.bad_stream.append({
                 'data': self,
-                'errors': e.messages
+                'errors': e.messages,
+                'error_msg': "".join(msg)
             })
             self.stats['failed'] += 1
         else:
