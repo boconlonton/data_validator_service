@@ -4,17 +4,8 @@ from collections import namedtuple
 
 from typing import Any
 
-
-class ExtensionError(Exception):
-    pass
-
-
-class TaskIDError(Exception):
-    pass
-
-
-class ObjectKeyError(Exception):
-    pass
+from src.validator.errors import ObjectKeyError
+from src.validator.errors import TaskError
 
 
 def get_key_from_event(*, event: dict) -> str:
@@ -69,9 +60,9 @@ def get_info_from_key(*, key: str) -> Any:
     temp = key.split('/')
     file_obj = file_nt(*temp)
     if not file_obj.task_id:
-        raise TaskIDError('Task ID not existed')
+        raise TaskError('MISSING_TASK_ID')
     if not file_obj.task_id.isnumeric():
-        raise TaskIDError(f'Invalid Task ID: {file_obj.task_id}')
+        raise TaskError('INVALID_TASK_ID')
     file_obj.file = extract_file_name(file_name=file_obj.file)
     return file_obj
 

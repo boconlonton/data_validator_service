@@ -6,6 +6,51 @@ from marshmallow import ValidationError
 from marshmallow import post_load
 
 
+_HEADERS = {
+    'first_name',
+    'middle_name',
+    'last_name',
+    'code',
+    'date_of_birth',
+    'work_email',
+    'phone_number',
+    'tax_code',
+    'social_code',
+    'government_id',
+    'government_issued_date',
+    'government_issued_place',
+    'passport_id',
+    'passport_issued_date',
+    'passport_issued_place',
+    'start_working_date',
+    'end_working_date',
+    'user_type',
+    'gender',
+    'working_status',
+    'permission_profile',
+    'employment_contract',
+    'birthplace',
+    'hometown',
+    'ethnics',
+    'religion',
+    'permanent_address',
+    'permanent_address_province',
+    'permanent_address_district',
+    'permanent_address_ward',
+    'mailing_address',
+    'mailing_address_province',
+    'mailing_address_district',
+    'mailing_address_ward',
+    'communist_party_status',
+    'communist_party_entry_date',
+    'trade_union_status',
+    'trade_union_entry_date',
+    'teaching_title',
+    'academic_title',
+    'degree'
+}
+
+
 class UserSchema(Schema):
     first_name = fields.String(validate=validate.Length(min=1, max=50))
     middle_name = fields.String(validate=validate.Length(min=1, max=50),

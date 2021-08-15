@@ -2,7 +2,10 @@ from collections import Counter
 
 from marshmallow import ValidationError
 
-from src.validator import UserSchema
+from src.validator.schema import UserSchema
+from src.validator.schema import _HEADERS
+
+from src.validator.errors import MissingHeadersError
 
 
 class Validator:
@@ -251,3 +254,13 @@ class Validator:
             lambda record: record.get('work_email') in self._EMAILS,
             self.valid_stream
         )
+
+    @staticmethod
+    def validate_headers(headers):
+        missing_headers = _HEADERS.difference(headers)
+        if missing_headers:
+            msg = (
+                " ".join(field.split('_')).capitalize()
+                for field in missing_headers
+            )
+            raise MissingHeadersError(f'{",".join(msg)}')

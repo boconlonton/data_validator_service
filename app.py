@@ -3,7 +3,7 @@ from collections import namedtuple
 import openpyxl
 
 
-from src.models import Validator
+from src.validator.models import Validator
 
 
 wb = openpyxl.load_workbook('input/data.xlsx')
