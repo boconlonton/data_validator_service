@@ -1,4 +1,4 @@
-from collections import Counter
+from collections import defaultdict
 
 from marshmallow import ValidationError
 
@@ -13,7 +13,7 @@ class Validator:
     valid_stream = list()
     bad_stream = list()
     duplicate_stream = list()
-    stats = Counter()
+    stats = defaultdict(int)
     _PROVINCES = {}
     _DISTRICTS = {}
     _WARDS = {}
