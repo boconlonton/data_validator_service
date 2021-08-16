@@ -19,8 +19,13 @@ class Validator:
     _WARDS = {}
     _WORKING_STATUS = {}
     _USER_TYPE = {}
-    _GENDER = {}
-    _PERMISSION_PROFILE = {}
+    _GENDER = {'male': 0,
+               'female': 1,
+               'other': 2,
+               'nam': 0,
+               'nữ': 1,
+               'khác': 2}
+    _PERMISSION_PROFILE = {'Default Profile': 1, 'Admin Profile': 2}
     _CONTRACT = {}
     _ETHNICS = {}
     _RELIGION = {}
@@ -105,7 +110,7 @@ class Validator:
 
     @gender.setter
     def gender(self, value):
-        self._gender = self._GENDER.get(value)
+        self._gender = self._GENDER.get(value.lower())
 
     @property
     def working_status_id(self):

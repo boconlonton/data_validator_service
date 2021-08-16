@@ -1,8 +1,16 @@
 """This module contains helper functions for interacting with
 database & excel file"""
+import io
+import json
+import typing
+
 from collections import namedtuple
+from contextlib import ExitStack
 
 from typing import Any
+from typing import Set
+
+from aurora_data_api import connect
 
 from validator.engine.errors import ObjectKeyError
 from validator.engine.errors import TaskError
@@ -67,3 +75,54 @@ def get_info_from_key(*, key: str) -> Any:
     if not file_obj.task_id.isnumeric():
         raise TaskError('INVALID_TASK_ID')
     return file_obj
+
+
+def get_data_from_s3(client, *, bucket: str, key: str) -> dict:
+    """Return a dictionary contains data from S3 file
+
+    Args:
+        client:
+        bucket (str): specify bucket name
+        key (str): specify object key
+    """
+    response = client.get_object(
+        Bucket=bucket,
+        Key=key,
+    )
+    body = response.get('Body')
+    return json.load(io.BytesIO(body.read()))
+
+
+def get_existed_emails(*,
+                       instance_arn: str,
+                       secret_arn: str,
+                       db_name: str) -> Set:
+    """Return a set of existed emails in database
+
+    Args:
+        instance_arn (str): specify Aurora Instance ARN
+        secret_arn (str): specify Secret Manger ARN
+        db_name (str): specify database name
+    """
+    with ExitStack() as stack:
+        conn = stack.enter_context(
+            connect(
+                instance_arn,
+                secret_arn,
+                database=db_name
+            )
+        )
+        cursor = stack.enter_context(conn.cursor())
+        query = 'SELECT work_email FROM "public"."users"'
+        cursor.execute(query)
+        temp = cursor.fetchall()
+    return {item[0] for item in temp}
+
+
+def get_headers(*, worksheet) -> typing.List:
+    """Return list of headers of a worksheet
+
+    Args:
+        worksheet: specify the worksheet
+    """
+    return [cell.value.lower().replace(' ', '_') for cell in worksheet[1]]

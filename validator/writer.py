@@ -1,4 +1,4 @@
-import os
+from enum import Enum
 
 from typing import List
 from typing import Any
@@ -11,11 +11,18 @@ from openpyxl.styles import NamedStyle
 from openpyxl.styles import PatternFill
 
 from validator.loader import file_nt
+from validator.engine.errors import TaskMessage
 
 error_style = NamedStyle(name='error')
 error_style.fill = PatternFill(start_color='00FF0000',
                                end_color='00FF0000',
                                fill_type='solid')
+
+
+class TaskStatus(Enum):
+    IN_PROGRESS = 0
+    COMPLETED = 1
+    FAILED = 2
 
 
 class ExcelWriter:
@@ -88,9 +95,63 @@ class ExcelWriter:
 
 class DBWriter:
 
-    def __int__(self,
-                *,
-                task_id: str,
-                cursor):
-        self.task_id = task_id
+    def __init__(self,
+                 *,
+                 task_id: str,
+                 cursor):
         self._cursor = cursor
+        self.task_id = task_id
+
+    @property
+    def task_id(self):
+        return self.task_id
+
+    @task_id.setter
+    def task_id(self, value):
+        """Create a task in DB"""
+        query = 'INSERT INTO "public"."task" (task_id) VALUES (:task_id)'
+        self._cursor.execute(query, {'task_id': int(value)})
+
+    def update_task(self,
+                    *,
+                    status: TaskStatus,
+                    msg: TaskMessage = None,
+                    details: str = None,
+                    total: int = 0,
+                    failed: int = 0,
+                    duplicated: int = 0):
+        """Update details of a task
+
+        Args:
+            status (str): specify task status
+            msg (TaskMessage): specify error message
+            details (str): specify details of error
+            total (int): specify total records
+            failed (int): specify total failed records
+            duplicated (int): specify total duplicated records
+        """
+        query = (
+            'UPDATE "public"."task" SET '
+            'status = :status,'
+            'message = :msg,'
+            'details = :details,'
+            'total = :total,'
+            'failed = :failed,'
+            'duplicated = :duplicated '
+            'WHERE task_id = :task_id'
+        )
+        self._cursor.execute(
+            query,
+            {
+                'status': status,
+                'msg': msg,
+                'details': details,
+                'total': total,
+                'failed': failed,
+                'duplicated': duplicated,
+                'task_id': self.task_id
+            }
+        )
+
+    def write_users(self, *, headers, stream):
+        pass
