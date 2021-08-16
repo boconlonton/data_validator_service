@@ -46,15 +46,12 @@ Validator._WARDS = get_data_from_s3(client,
 Validator._WORKING_STATUS = get_data_from_s3(client,
                                              bucket=S3_BUCKET,
                                              key='metadata/working_status.json')
-Validator._USER_TYPE = get_data_from_s3(client,
-                                        bucket=S3_BUCKET,
-                                        key='metadata/user_type.json')
 Validator._CONTRACT = get_data_from_s3(client,
                                        bucket=S3_BUCKET,
-                                       key='metadata/contract.json')
+                                       key='metadata/employment_contract.json')
 Validator._ETHNICS = get_data_from_s3(client,
                                       bucket=S3_BUCKET,
-                                      key='metadata/ethnic.json')
+                                      key='metadata/ethnics.json')
 Validator._RELIGION = get_data_from_s3(client,
                                        bucket=S3_BUCKET,
                                        key='metadata/religion.json')
@@ -125,6 +122,7 @@ def executioner(*, original_key, task, file_obj):
                      total=total,
                      failed=failed,
                      duplicated=duplicated)
+    logger.info('COMPLETED')
     logger.info(f'COMPLETED: Task(id={task.task_id},'
                 f'total={total},failed={failed},duplicated={duplicated})')
     return
@@ -149,7 +147,7 @@ def lambda_handler(event, *args, **kwargs):
         task = DBWriter(task_id=file_obj.task_id, cursor=cursor)
         try:
             executioner(original_key=original_key,
-                        task=task,
+                        task=None,
                         file_obj=file_obj)
         except Exception as e:
             logger.error('ENGINE_ERROR', exc_info=e)
